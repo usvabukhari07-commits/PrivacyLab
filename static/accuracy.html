@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+    <script src="/static/common.js"></script>
+  <title>PrivacyLab Accuracy</title>
+  <style>
+    body { font-family: sans-serif; max-width: 800px; margin: 40px auto; }
+    label { display: block; margin-top: 12px; font-weight: bold; }
+    select { padding: 6px; width: 320px; }
+    button { margin-top: 16px; padding: 8px 16px; }
+    table { border-collapse: collapse; margin-top: 12px; }
+    td, th { border: 1px solid #ccc; padding: 4px 10px; text-align: left; }
+    .err { color: #b00020; }
+  </style>
+</head>
+<body>
+  <h2>Accuracy comparison (admin only)</h2>
+  <p><a href="/dashboard">&larr; Back to dashboard</a></p>
+  <p>Runs the noise 500 times per group at several epsilons and shows how far the noisy answers are from the true answer. No privacy budget is spent.</p>
+
+  <label>Dataset</label>
+  <select id="dataset" onchange="onDatasetChange()"></select>
+  <label>Operation</label>
+  <select id="operation">
+    <option value="count">count</option>
+    <option value="sum">sum</option>
+    <option value="mean">mean</option>
+  </select>
+  <label>Column (for sum / mean)</label>
+  <select id="column"></select>
+  <label>Group by (optional)</label>
+  <select id="group"></select>
+  <label>Mechanism</label>
+  <select id="mechanism">
+    <option value="laplace">laplace</option>
+    <option value="gaussian">gaussian</option>
+  </select>
+  <button onclick="run()">Compare</button>
+
+  <ul id="errors" class="err"></ul>
+  <div id="result"></div>
+
+  <script>
+    let datasets = [];
+
+    function addOption(select, value, label) {
+      const o = document.createElement("option");
+      o.value = value;
+      o.textContent = label;
+      select.appendChild(o);
+    }
+
+    function add(parent, tag, text, cls) {
+      const el = document.createElement(tag);
+      el.textContent = text;
+      if (cls) el.className = cls;
+      parent.appendChild(el);
+      return el;
+    }
+
+    function currentDataset() {
+      return datasets.find(d => d.id === document.getElementById("dataset").value);
+    }
+
+    function onDatasetChange() {
+      const ds = currentDataset();
+      const col = document.getElementById("column");
+      const grp = document.getElementById("group");
+      col.innerHTML = "";
+      grp.innerHTML = "";
+      addOption(grp, "", "(none)");
+      if (!ds) return;
+      JSON.parse(ds.columns).forEach(c => { addOption(col, c, c); addOption(grp, c, c); });
+    }
+
+    async function loadDatasets() {
+      const res = await fetch("/api/datasets");
+      if (!res.ok) { add(document.getElementById("errors"), "li", "Admin login required"); return; }
+      datasets = await res.json();
+      const sel = document.getElementById("dataset");
+      sel.innerHTML = "";
+      datasets.forEach(d => addOption(sel, d.id, d.filename + " (" + d.id.slice(0, 8) + ")"));
+      onDatasetChange();
+    }
+
+    async function run() {
+      const errs = document.getElementById("errors");
+      const out = document.getElementById("result");
+      errs.innerHTML = "";
+      out.innerHTML = "";
+      const ds = currentDataset();
+      if (!ds) { add(errs, "li", "Upload a dataset first"); return; }
+
+      const body = {
+        dataset_id: ds.id,
+        operation: document.getElementById("operation").value,
+        column: document.getElementById("column").value || null,
+        group_by: document.getElementById("group").value || null,
+        mechanism: document.getElementById("mechanism").value
+      };
+      const res = await fetch("/api/accuracy", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(body)
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        const items = Array.isArray(data.detail) ? data.detail : ["Request failed"];
+        items.forEach(t => add(errs, "li", typeof t === "string" ? t : "Invalid request"));
+        return;
+      }
+
+      add(out, "h3", "True values");
+      const t1 = add(out, "table", "");
+      const h1 = add(t1, "tr", "");
+      ["Group", "True value", "Group size"].forEach(h => add(h1, "th", h));
+      data.groups.forEach(g => {
+        const tr = add(t1, "tr", "");
+        [g.group, g.true_value, g.group_size].forEach(v => add(tr, "td", v));
+      });
+
+      add(out, "h3", "Error by epsilon (" + data.trials_per_group + " trials per group, " + data.mechanism + ")");
+      const t2 = add(out, "table", "");
+      const h2 = add(t2, "tr", "");
+      ["Epsilon", "Mean abs error", "RMSE", "95th pct error", "Mean relative error %"].forEach(h => add(h2, "th", h));
+      data.by_epsilon.forEach(r => {
+        const tr = add(t2, "tr", "");
+        [r.epsilon, r.mean_abs_error, r.rmse, r.p95_abs_error, r.mean_relative_error_pct].forEach(v => add(tr, "td", v ?? "-"));
+      });
+      add(out, "p", "Computation time: " + data.runtime_ms + " ms");
+    }
+
+    loadDatasets();
+  </script>
+</body>
+</html>

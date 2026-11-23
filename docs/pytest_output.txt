@@ -1,0 +1,132 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.12.7, pytest-9.2.0, pluggy-1.7.0 -- /Users/syedauswa/Desktop/privacy_lab/venv/bin/python3.12
+cachedir: .pytest_cache
+rootdir: /Users/syedauswa/Desktop/privacy_lab
+plugins: anyio-4.16.0
+collecting ... collected 99 items
+
+tests/test_api.py::test_anonymous_requests_are_rejected PASSED           [  1%]
+tests/test_api.py::test_wrong_password_and_unknown_user_get_the_same_generic_error PASSED [  2%]
+tests/test_api.py::test_sql_injection_in_login_does_not_work PASSED      [  3%]
+tests/test_api.py::test_logout_ends_the_session PASSED                   [  4%]
+tests/test_api.py::test_T_final_repeated_failed_logins_are_rate_limited PASSED [  5%]
+tests/test_api.py::test_T_final_viewer_is_denied_everything_except_released_results PASSED [  6%]
+tests/test_api.py::test_T_final_analyst_cannot_use_admin_functions PASSED [  7%]
+tests/test_api.py::test_denied_attempts_are_logged PASSED                [  8%]
+tests/test_api.py::test_viewer_sees_only_noisy_released_results PASSED   [  9%]
+tests/test_api.py::test_csrf_header_is_required_for_state_changing_requests PASSED [ 10%]
+tests/test_api.py::test_security_headers_are_set PASSED                  [ 11%]
+tests/test_api.py::test_valid_upload_gets_a_server_generated_id_and_is_stored PASSED [ 12%]
+tests/test_api.py::test_T_final_malformed_oversized_and_malicious_uploads_are_rejected PASSED [ 13%]
+tests/test_api.py::test_path_traversal_in_filename_is_neutralised PASSED [ 14%]
+tests/test_api.py::test_T_final_upload_flooding_is_rate_limited PASSED   [ 15%]
+tests/test_api.py::test_unknown_dataset_and_injection_style_ids_give_a_clean_404 PASSED [ 16%]
+tests/test_api.py::test_injection_style_column_is_rejected PASSED        [ 17%]
+tests/test_api.py::test_T_final_query_flooding_is_rate_limited PASSED    [ 18%]
+tests/test_api.py::test_T_final_unexpected_error_fails_safely PASSED     [ 19%]
+tests/test_api.py::test_audit_log_never_contains_passwords PASSED        [ 20%]
+tests/test_api.py::test_admin_changes_threshold_and_the_change_is_traceable PASSED [ 21%]
+tests/test_api.py::test_admin_budget_change_is_validated_and_traceable PASSED [ 22%]
+tests/test_api.py::test_audit_log_can_be_filtered PASSED                 [ 23%]
+tests/test_api.py::test_accuracy_report_is_admin_only_and_correct PASSED [ 24%]
+tests/test_api.py::test_export_is_sanitized PASSED                       [ 25%]
+tests/test_api.py::test_T_final_budget_cache_and_audit_survive_a_restart PASSED [ 26%]
+tests/test_api.py::test_T_final_admin_setting_survives_a_restart PASSED  [ 27%]
+tests/test_api.py::test_decision_latency_is_reported PASSED              [ 28%]
+tests/test_mechanisms.py::test_laplace_scale_is_sensitivity_over_epsilon PASSED [ 29%]
+tests/test_mechanisms.py::test_laplace_noise_is_unbiased_with_expected_size PASSED [ 30%]
+tests/test_mechanisms.py::test_gaussian_noise_matches_sigma PASSED       [ 31%]
+tests/test_mechanisms.py::test_gaussian_rejects_epsilon_of_one_or_more PASSED [ 32%]
+tests/test_mechanisms.py::test_non_positive_epsilon_rejected[0] PASSED   [ 33%]
+tests/test_mechanisms.py::test_non_positive_epsilon_rejected[-1] PASSED  [ 34%]
+tests/test_mechanisms.py::test_negative_sensitivity_rejected PASSED      [ 35%]
+tests/test_mechanisms.py::test_unknown_mechanism_rejected PASSED         [ 36%]
+tests/test_mechanisms.py::test_smaller_epsilon_means_more_noise PASSED   [ 37%]
+tests/test_mechanisms.py::test_same_seed_repeats_and_different_seed_differs PASSED [ 38%]
+tests/test_mechanisms.py::test_T3_count_error_is_about_one_over_epsilon PASSED [ 39%]
+tests/test_mechanisms.py::test_T3_error_shrinks_as_epsilon_grows PASSED  [ 40%]
+tests/test_mechanisms.py::test_T3_report_has_true_values_and_runtime PASSED [ 41%]
+tests/test_mechanisms.py::test_T3_gaussian_report_only_uses_epsilon_below_one PASSED [ 42%]
+tests/test_queries.py::test_valid_query_is_accepted PASSED               [ 43%]
+tests/test_queries.py::test_invalid_queries_are_rejected[bad0-E_QUERY_OP] PASSED [ 44%]
+tests/test_queries.py::test_invalid_queries_are_rejected[bad1-E_QUERY_COLUMN] PASSED [ 45%]
+tests/test_queries.py::test_invalid_queries_are_rejected[bad2-E_QUERY_COLUMN] PASSED [ 46%]
+tests/test_queries.py::test_invalid_queries_are_rejected[bad3-E_QUERY_COLUMN] PASSED [ 47%]
+tests/test_queries.py::test_invalid_queries_are_rejected[bad4-E_QUERY_GROUP] PASSED [ 48%]
+tests/test_queries.py::test_invalid_queries_are_rejected[bad5-E_QUERY_GROUP] PASSED [ 49%]
+tests/test_queries.py::test_invalid_queries_are_rejected[bad6-E_QUERY_EPSILON] PASSED [ 50%]
+tests/test_queries.py::test_invalid_queries_are_rejected[bad7-E_QUERY_EPSILON] PASSED [ 51%]
+tests/test_queries.py::test_invalid_queries_are_rejected[bad8-E_QUERY_EPSILON] PASSED [ 52%]
+tests/test_queries.py::test_invalid_queries_are_rejected[bad9-E_QUERY_EPSILON] PASSED [ 53%]
+tests/test_queries.py::test_invalid_queries_are_rejected[bad10-E_QUERY_MECH] PASSED [ 54%]
+tests/test_queries.py::test_invalid_queries_are_rejected[bad11-E_GAUSS_EPSILON] PASSED [ 55%]
+tests/test_queries.py::test_query_fingerprint_changes_with_query_dataset_and_rule PASSED [ 56%]
+tests/test_queries.py::test_count_is_close_to_truth_at_large_epsilon PASSED [ 57%]
+tests/test_queries.py::test_values_are_clamped_to_declared_bounds PASSED [ 58%]
+tests/test_queries.py::test_T4_small_groups_are_suppressed PASSED        [ 59%]
+tests/test_queries.py::test_T4_group_of_exactly_threshold_size_is_shown PASSED [ 60%]
+tests/test_queries.py::test_T4_raising_the_threshold_hides_more_groups PASSED [ 61%]
+tests/test_queries.py::test_T4_tiny_dataset_without_grouping_is_suppressed PASSED [ 62%]
+tests/test_queries.py::test_T1_budget_exhaustion_through_the_api PASSED  [ 63%]
+tests/test_queries.py::test_T2_repeated_query_returns_same_answer_and_costs_nothing PASSED [ 64%]
+tests/test_queries.py::test_T2_another_user_gets_the_same_saved_answer PASSED [ 65%]
+tests/test_queries.py::test_T2_a_different_epsilon_is_a_new_query_and_is_charged PASSED [ 66%]
+tests/test_queries.py::test_T4_small_group_is_not_disclosed_through_the_api PASSED [ 67%]
+tests/test_risk.py::test_small_epsilon_and_unused_budget_is_low_risk PASSED [ 68%]
+tests/test_risk.py::test_moderate_epsilon_is_medium_risk PASSED          [ 69%]
+tests/test_risk.py::test_large_epsilon_is_high_risk_and_asks_for_review PASSED [ 70%]
+tests/test_risk.py::test_budget_nearly_used_is_high_risk PASSED          [ 71%]
+tests/test_risk.py::test_half_budget_used_is_medium_risk PASSED          [ 72%]
+tests/test_risk.py::test_suppressed_groups_are_explained PASSED          [ 73%]
+tests/test_risk.py::test_repeat_query_is_explained PASSED                [ 74%]
+tests/test_risk.py::test_large_noise_is_flagged_as_a_utility_problem PASSED [ 75%]
+tests/test_risk.py::test_gaussian_mechanism_is_explained PASSED          [ 76%]
+tests/test_risk.py::test_changing_a_threshold_changes_the_decision_and_is_recorded PASSED [ 77%]
+tests/test_risk.py::test_decision_is_reproducible_and_versioned PASSED   [ 78%]
+tests/test_schema.py::test_valid_file_is_accepted PASSED                 [ 79%]
+tests/test_schema.py::test_out_of_bounds_values_give_warning_not_error PASSED [ 80%]
+tests/test_schema.py::test_wrong_extension_rejected PASSED               [ 81%]
+tests/test_schema.py::test_oversized_file_rejected PASSED                [ 82%]
+tests/test_schema.py::test_empty_file_rejected PASSED                    [ 83%]
+tests/test_schema.py::test_binary_content_rejected PASSED                [ 84%]
+tests/test_schema.py::test_non_utf8_rejected PASSED                      [ 85%]
+tests/test_schema.py::test_duplicate_columns_rejected PASSED             [ 86%]
+tests/test_schema.py::test_bad_column_name_rejected PASSED               [ 87%]
+tests/test_schema.py::test_too_many_columns_rejected PASSED              [ 88%]
+tests/test_schema.py::test_too_many_rows_rejected PASSED                 [ 89%]
+tests/test_schema.py::test_header_only_file_rejected PASSED              [ 90%]
+tests/test_schema.py::test_formula_injection_rejected[=] PASSED          [ 91%]
+tests/test_schema.py::test_formula_injection_rejected[+] PASSED          [ 92%]
+tests/test_schema.py::test_formula_injection_rejected[-] PASSED          [ 93%]
+tests/test_schema.py::test_formula_injection_rejected[@] PASSED          [ 94%]
+tests/test_schema.py::test_non_numeric_value_in_bounded_column_rejected PASSED [ 95%]
+tests/test_schema.py::test_bounds_for_missing_column_rejected PASSED     [ 96%]
+tests/test_schema.py::test_bad_bounds_text_rejected[age:18-E_BOUNDS_FORMAT] PASSED [ 97%]
+tests/test_schema.py::test_bad_bounds_text_rejected[age:a:b-E_BOUNDS_FORMAT] PASSED [ 98%]
+tests/test_schema.py::test_bad_bounds_text_rejected[age:100:18-E_BOUNDS_RANGE] PASSED [100%]
+
+=============================== warnings summary ===============================
+venv/lib/python3.12/site-packages/fastapi/testclient.py:1
+  /Users/syedauswa/Desktop/privacy_lab/venv/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+tests/test_api.py::test_anonymous_requests_are_rejected
+  /Users/syedauswa/Desktop/privacy_lab/app/main.py:89: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    @app.on_event("startup")
+
+tests/test_api.py::test_anonymous_requests_are_rejected
+  /Users/syedauswa/Desktop/privacy_lab/venv/lib/python3.12/site-packages/fastapi/applications.py:4723: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    return self.router.on_event(event_type)  # ty: ignore[deprecated]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================= 99 passed, 3 warnings in 56.86s ========================

@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+bcrypt
+numpy
+pandas
+python-multipart
+itsdangerous
+pytest
+httpx

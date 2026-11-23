@@ -1,0 +1,19 @@
+# Python / environment
+venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Secrets and local data (never commit these)
+.secret_key
+.env
+privacylab.db
+data/
+reports/
+
+# Large generated test file (make_fixtures.py recreates it)
+fixtures/too_big.csv
+
+# Mac / editor
+.DS_Store
+.vscode/

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="/static/common.js"></script>
+  <title>PrivacyLab Admin</title>
+  <style>
+    body { font-family: sans-serif; max-width: 900px; margin: 40px auto; }
+    table { border-collapse: collapse; width: 100%; font-size: 14px; margin-bottom: 20px; }
+    td, th { border: 1px solid #ccc; padding: 4px 8px; text-align: left; }
+    input { padding: 4px; }
+    button { padding: 4px 12px; }
+    .err { color: #b00020; } .ok { color: #1b7f3b; }
+    .box { background: #f5f5f5; padding: 10px; margin-bottom: 16px; }
+  </style>
+</head>
+<body>
+  <h2>Admin controls</h2>
+  <p><a href="/dashboard">&larr; Back to dashboard</a></p>
+  <p id="msg"></p>
+
+  <div class="box">
+    <h3>Small-group threshold</h3>
+    <p>Groups with fewer people than this are hidden from results. Current value: <b id="kNow"></b></p>
+    <input id="kNew" type="number" min="2" max="50" placeholder="2 to 50">
+    <button onclick="saveThreshold()">Change</button>
+  </div>
+
+  <h3>Privacy budgets</h3>
+  <table>
+    <thead><tr><th>File</th><th>ID</th><th>Spent</th><th>Budget</th><th>New budget</th><th></th></tr></thead>
+    <tbody id="dsBody"></tbody>
+  </table>
+
+  <h3>Audit log</h3>
+  <p>
+    Action <input id="fAction" size="12" placeholder="e.g. config_change">
+    Outcome <input id="fOutcome" size="12" placeholder="e.g. denied">
+    User <input id="fUser" size="10" placeholder="e.g. analyst">
+    <button onclick="loadAudit()">Filter</button>
+  </p>
+  <table>
+    <thead><tr><th>Time</th><th>User</th><th>Action</th><th>Outcome</th><th>Detail</th></tr></thead>
+    <tbody id="auditBody"></tbody>
+  </table>
+
+  <script>
+    function add(parent, tag, text, cls) {
+      const el = document.createElement(tag);
+      el.textContent = text;
+      if (cls) el.className = cls;
+      parent.appendChild(el);
+      return el;
+    }
+
+    function showMsg(text, ok) {
+      const m = document.getElementById("msg");
+      m.textContent = text;
+      m.className = ok ? "ok" : "err";
+    }
+
+    async function post(url, body) {
+      const res = await fetch(url, {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(body)
+      });
+      let data = {};
+      try { data = await res.json(); } catch (e) {}
+      return { ok: res.ok, data: data };
+    }
+
+    function errText(data) {
+      return Array.isArray(data.detail) ? data.detail.join("; ") : (data.detail || "Request failed");
+    }
+
+    async function loadConfig() {
+      const res = await fetch("/api/admin/config");
+      if (!res.ok) { showMsg("Admin login required", false); return; }
+      const c = await res.json();
+      document.getElementById("kNow").textContent = c.min_group_size;
+    }
+
+    async function saveThreshold() {
+      const v = parseInt(document.getElementById("kNew").value, 10);
+      if (isNaN(v)) { showMsg("Enter a number", false); return; }
+      if (!confirm("Change the small-group threshold to " + v + "? This affects what future queries reveal.")) return;
+      const r = await post("/api/admin/min-group-size", { min_group_size: v, confirm: true });
+      if (r.ok) {
+        showMsg("Threshold changed from " + r.data.previous + " to " + r.data.min_group_size, true);
+        loadConfig(); loadAudit();
+      } else {
+        showMsg(errText(r.data), false);
+      }
+    }
+
+    async function loadDatasets() {
+      const res = await fetch("/api/datasets");
+      if (!res.ok) return;
+      const body = document.getElementById("dsBody");
+      body.innerHTML = "";
+      (await res.json()).forEach(d => {
+        const tr = add(body, "tr", "");
+        [d.filename, d.id.slice(0, 8), d.epsilon_spent, d.epsilon_budget].forEach(v => add(tr, "td", v));
+        const tdIn = add(tr, "td", "");
+        const input = document.createElement("input");
+        input.type = "number"; input.step = "0.5"; input.size = 6;
+        tdIn.appendChild(input);
+        const tdBtn = add(tr, "td", "");
+        const btn = add(tdBtn, "button", "Set");
+        btn.onclick = () => saveBudget(d, input.value);
+      });
+    }
+
+    async function saveBudget(d, value) {
+      const v = parseFloat(value);
+      if (isNaN(v)) { showMsg("Enter a budget number", false); return; }
+      if (!confirm("Change the budget of " + d.filename + " from " + d.epsilon_budget + " to " + v + "?")) return;
+      const r = await post("/api/admin/budget", { dataset_id: d.id, new_budget: v, confirm: true });
+      if (r.ok) {
+        showMsg("Budget changed to " + v, true);
+        loadDatasets(); loadAudit();
+      } else {
+        showMsg(errText(r.data), false);
+      }
+    }
+
+    async function loadAudit() {
+      const params = new URLSearchParams();
+      const a = document.getElementById("fAction").value.trim();
+      const o = document.getElementById("fOutcome").value.trim();
+      const u = document.getElementById("fUser").value.trim();
+      if (a) params.set("action", a);
+      if (o) params.set("outcome", o);
+      if (u) params.set("username", u);
+      const res = await fetch("/api/audit?" + params.toString());
+      if (!res.ok) return;
+      const body = document.getElementById("auditBody");
+      body.innerHTML = "";
+      (await res.json()).forEach(r => {
+        const tr = add(body, "tr", "");
+        [r.timestamp, r.username, r.action, r.outcome, r.detail].forEach(v => add(tr, "td", v ?? ""));
+      });
+    }
+
+    async function init() {
+      const me = await fetch("/api/me");
+      if (!me.ok) { window.location = "/"; return; }
+      loadConfig(); loadDatasets(); loadAudit();
+    }
+    init();
+  </script>
+</body>
+</html>

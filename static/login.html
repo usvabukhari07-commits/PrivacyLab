@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>PrivacyLab Login</title>
+  <style>
+    body { font-family: sans-serif; max-width: 360px; margin: 80px auto; }
+    input, button { width: 100%; padding: 8px; margin: 6px 0; box-sizing: border-box; }
+    #msg { color: #b00020; }
+  </style>
+</head>
+<body>
+  <h2>PrivacyLab</h2>
+  <input id="username" placeholder="Username">
+  <input id="password" type="password" placeholder="Password">
+  <button onclick="login()">Log in</button>
+  <p id="msg"></p>
+
+  <script>
+    async function login() {
+      const res = await fetch("/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Requested-With": "PrivacyLab"
+        },
+        body: JSON.stringify({
+          username: document.getElementById("username").value,
+          password: document.getElementById("password").value
+        })
+      });
+      if (res.ok) {
+        window.location = "/dashboard";
+      } else if (res.status === 429) {
+        document.getElementById("msg").textContent = "Too many attempts. Try again in a few minutes.";
+      } else if (res.status === 403) {
+        document.getElementById("msg").textContent = "Request blocked (missing security header). Hard refresh the page.";
+      } else {
+        document.getElementById("msg").textContent = "Invalid username or password";
+      }
+    }
+  </script>
+</body>
+</html>

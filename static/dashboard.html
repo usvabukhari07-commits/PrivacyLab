@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+    <script src="/static/common.js"></script>
+  <title>PrivacyLab Dashboard</title>
+  <style>
+    body { font-family: sans-serif; max-width: 900px; margin: 40px auto; }
+    table { border-collapse: collapse; width: 100%; font-size: 14px; margin-bottom: 20px; }
+    td, th { border: 1px solid #ccc; padding: 4px 8px; text-align: left; }
+    input[type=text] { width: 320px; padding: 4px; }
+    .err { color: #b00020; } .ok { color: #1b7f3b; } .warn { color: #a66300; }
+  </style>
+</head>
+<body>
+  <h2>PrivacyLab Dashboard</h2>
+  <p>Logged in as <b id="who"></b> (<span id="role"></span>)
+     <button onclick="logout()">Log out</button></p>
+
+  <div id="uploadSection" style="display:none">
+        <p><a href="/query"><b>Run private queries &rarr;</b></a></p>
+    <h3>Upload dataset</h3>
+    <input type="file" id="csvFile" accept=".csv"><br><br>
+    Numeric column bounds (example: <code>age:18:100,salary:0:300000</code>)<br>
+    <input type="text" id="bounds" placeholder="column:min:max,column:min:max"><br><br>
+    <button onclick="upload()">Upload</button>
+    <ul id="uploadMsg"></ul>
+
+    <h3>Datasets</h3>
+    <table>
+      <thead><tr><th>ID</th><th>File</th><th>Rows</th><th>Columns</th><th>Budget (spent / total)</th><th>Uploaded</th></tr></thead>
+      <tbody id="dsBody"></tbody>
+    </table>
+  </div>
+  <div id="resultsSection">
+    <h3>Released results</h3>
+        <p id="exportLink" style="display:none"><a href="/api/export"><b>Download sanitized report (JSON)</b></a></p>
+    <table>
+      <thead><tr><th>Time</th><th>Dataset</th><th>Query</th><th>Epsilon</th><th>Group</th><th>Noisy value</th></tr></thead>
+      <tbody id="resBody"></tbody>
+    </table>
+  </div>
+  <div id="adminSection" style="display:none">
+        <p><a href="/accuracy"><b>Accuracy comparison &rarr;</b></a></p>
+            <p><a href="/admin"><b>Admin controls &rarr;</b></a></p>
+    <h3>Audit log (admin only)</h3>
+    <table>
+      <thead><tr><th>Time</th><th>User</th><th>Action</th><th>Outcome</th><th>Detail</th></tr></thead>
+      <tbody id="auditBody"></tbody>
+    </table>
+  </div>
+
+  <script>
+    function fillRow(body, values) {
+      const tr = document.createElement("tr");
+      values.forEach(v => {
+        const td = document.createElement("td");
+        td.textContent = v ?? "";     // textContent prevents XSS
+        tr.appendChild(td);
+      });
+      body.appendChild(tr);
+    }
+
+    function showMsg(items, cls) {
+      const ul = document.getElementById("uploadMsg");
+      ul.innerHTML = "";
+      items.forEach(t => {
+        const li = document.createElement("li");
+        li.className = cls; li.textContent = t; ul.appendChild(li);
+      });
+    }
+
+    async function loadDatasets() {
+      const res = await fetch("/api/datasets");
+      if (!res.ok) return;
+      const body = document.getElementById("dsBody");
+      body.innerHTML = "";
+      (await res.json()).forEach(d => fillRow(body, [
+        d.id, d.filename, d.row_count, JSON.parse(d.columns).join(", "),
+        d.epsilon_spent + " / " + d.epsilon_budget, d.created_at
+      ]));
+    }
+
+    async function loadAudit() {
+      const res = await fetch("/api/audit");
+      if (!res.ok) return;
+      const body = document.getElementById("auditBody");
+      body.innerHTML = "";
+      (await res.json()).forEach(r => fillRow(body, [r.timestamp, r.username, r.action, r.outcome, r.detail]));
+    }
+    async function loadResults() {
+      const res = await fetch("/api/results");
+      if (!res.ok) return;
+      const body = document.getElementById("resBody");
+      body.innerHTML = "";
+      (await res.json()).forEach(r => {
+        const q = r.operation + (r.column ? "(" + r.column + ")" : "") + (r.group_by ? " by " + r.group_by : "");
+        if (r.rows.length === 0) {
+          fillRow(body, [r.created_at, r.dataset, q, r.epsilon, "(all groups hidden)", ""]);
+        }
+        r.rows.forEach(x => fillRow(body, [r.created_at, r.dataset, q, r.epsilon, x.group, x.value]));
+      });
+    }
+    async function upload() {
+      const f = document.getElementById("csvFile").files[0];
+      if (!f) { showMsg(["Choose a file first"], "err"); return; }
+      const fd = new FormData();
+      fd.append("file", f);
+      fd.append("bounds", document.getElementById("bounds").value);
+      const res = await fetch("/api/datasets", { method: "POST", body: fd });
+      const data = await res.json();
+      if (res.ok) {
+        showMsg(["Accepted: " + data.rows + " rows"].concat(data.warnings), data.warnings.length ? "warn" : "ok");
+        loadDatasets();
+      } else {
+        showMsg(Array.isArray(data.detail) ? data.detail : [data.detail], "err");
+      }
+      loadAudit();
+    }
+
+    async function init() {
+      const res = await fetch("/api/me");
+      if (!res.ok) { window.location = "/"; return; }
+      const me = await res.json();
+      document.getElementById("who").textContent = me.username;
+      document.getElementById("role").textContent = me.role;
+            loadResults();
+      if (me.role === "admin" || me.role === "analyst") {
+              document.getElementById("exportLink").style.display = "block";
+        document.getElementById("uploadSection").style.display = "block";
+        loadDatasets();
+      }
+      if (me.role === "admin") {
+        document.getElementById("adminSection").style.display = "block";
+        loadAudit();
+      }
+    }
+
+    async function logout() {
+      await fetch("/api/logout", {method: "POST"});
+      window.location = "/";
+    }
+    init();
+  </script>
+</body>
+</html>
