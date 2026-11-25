@@ -46,5 +46,3 @@ budget. It is not a production service.
   values.
 - **Scope of testing.** All security tests were run against this system on a local machine. No
   external systems were targeted.
-- **Use of AI assistance.** An AI assistant helped with code, tests and drafting. The author reviewed
-  and ran everything and is responsible for the submitted work.

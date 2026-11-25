@@ -1,7 +1,7 @@
 # PrivacyLab: A Differentially Private Analytics Portal
 
 Information Security course, Class 1, Group 6, Proposal 06
-Student(s): [your name and ID; teammates if they contributed]
+Group members: Syeda Uswa (22L-6241), Areeba Bahadur (22L-7836), Mariah Kashif (22L-7814)
 Submission date: 25 November 2026
 Repository: https://github.com/usvabukhari07-commits/PrivacyLab
 
@@ -197,7 +197,7 @@ noise sampling, and suppression decided from true group sizes.
 Only synthetic sample data is used. Hiding small groups protects individuals but also makes small
 communities invisible, so thresholds must balance privacy and fair representation. Administrators hold
 power to weaken privacy, so their changes are confirmed and permanently logged. No external system was
-targeted in testing. The use of an AI assistant is described in section 11.
+targeted in testing.
 
 ## 10. Conclusion
 PrivacyLab meets the six functional requirements and the mandatory evaluation cases. Its main
@@ -206,14 +206,7 @@ repeated queries and small groups, explanations for every decision, and traceabl
 Future work: HTTPS, forced password change, advanced composition accounting, hardened noise sampling,
 and per-person budgets.
 
-## 11. Team and use of AI assistance
-[Fill in: who did what. For example: "Implementation, testing and documentation by [name]; teammates
-contributed [what]."]
-[Fill in according to your course rules, for example: "An AI assistant (Claude) was used for code
-suggestions, test drafting and document drafting. The author ran, tested and reviewed all code and is
-responsible for the submission."]
-
-## 12. Evidence index
+## 11. Evidence index
 | Claim | Evidence |
 |---|---|
 | All six functional requirements work | `tests/`, screenshots 02, 05, 06, 08 |

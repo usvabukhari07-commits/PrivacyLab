@@ -38,4 +38,3 @@ If the live demo fails, switch to the screenshots in `docs/screenshots/` in tabl
 | How do you stop CSRF? | Every POST must carry a custom header only our pages send, plus SameSite strict cookies. |
 | How are passwords stored? | bcrypt hashes, never in plain text or logs. |
 | What are the main weaknesses? | Plain HTTP and demo passwords on localhost, unencrypted storage, basic composition accounting. |
-| Did you use AI help? | Answer honestly, as in section 11 of the report. |

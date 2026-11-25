@@ -5,6 +5,8 @@ privacy. It adds calibrated noise (Laplace or Gaussian), tracks a per-dataset pr
 (epsilon ledger), refuses queries when the budget is spent, hides small groups, and explains the
 privacy risk of every release. Course project for Information Security (Class 1, Group 6, Proposal 06).
 
+Group members: Syeda Uswa (22L-6241), Areeba Bahadur (22L-7836), Mariah Kashif (22L-7814)
+
 ## Features
 - FR-1 CSV schema validation (type, size, structure, bounds, formula-injection checks)
 - FR-2 Query builder (count, sum, mean, optional group-by; whitelist only, no free-form SQL)
@@ -28,13 +30,15 @@ source venv/bin/activate          # Windows: venv\Scripts\activate
 pip install -r requirements.txt
 python make_fixtures.py           # creates sample CSV files in fixtures/
 ```
+If you received this project as a zip file, unzip it, open a terminal in the project folder and
+continue from the `python3 -m venv venv` line.
 
 ## Run
 ```bash
 uvicorn app.main:app --reload
 ```
 Open http://localhost:8000. The database (`privacylab.db`) and signing key (`.secret_key`) are
-created automatically on first start.
+created automatically on first start. Stop the server with Control + C.
 
 ## Demo accounts
 | Username | Password | Role |
@@ -60,9 +64,9 @@ Demo credentials for evaluation only.
 ```bash
 pytest -q
 ```
-99 automated tests (about one minute) cover all six functional requirements, the mandatory
+99 automated tests (about one to two minutes) cover all six functional requirements, the mandatory
 evaluation cases T1 to T4 and T-final, and authorization, injection, CSRF, rate-limit and recovery
-tests. Tests run on a temporary database. Results: `docs/test_results.md`.
+tests. Tests run on a temporary database and never touch real data. Results: `docs/test_results.md`.
 
 ## Project layout
 ```
@@ -75,4 +79,35 @@ app/
     schema.py      FR-1 CSV validation
     query.py       FR-2 query builder, clamping, small groups
     mechanisms.py  FR-3 Laplace / Gaussian noise
-    ledger.py
+    ledger.py      FR-4 epsilon budget
+    accuracy.py    FR-5 accuracy comparison
+    risk.py        FR-6 privacy-risk explanation
+static/            browser pages (login, dashboard, query, accuracy, admin)
+tests/             pytest suite
+fixtures/          sanitized sample data
+docs/              threat model, diagrams, guides, test results, report, screenshots
+make_fixtures.py   generates the sample CSV files
+```
+
+## Documentation
+| Document | File |
+|---|---|
+| Data-flow diagram and trust boundaries | `docs/data_flow_diagram.md` |
+| Threat model | `docs/threat_model.md` |
+| Test plan and results | `docs/test_results.md` |
+| Raw test output | `docs/pytest_output.txt` |
+| Screenshots (evidence) | `docs/screenshots/` |
+| User guide | `docs/user_guide.md` |
+| Administrator guide | `docs/admin_guide.md` |
+| Limitations and ethics | `docs/limitations_ethics.md` |
+| Demo script | `docs/demo_script.md` |
+| Final report | `docs/report.md` |
+
+## Security summary
+bcrypt password hashing; signed 30-minute sessions; server-side role checks; CSRF header on every
+state-changing request; rate limits on login, uploads and queries; parameterized SQL; strict upload
+validation; server-generated identifiers; atomic privacy-budget ledger; append-only audit log with no
+passwords or raw data; stable error codes without stack traces; secrets kept out of Git.
+
+## Limitations
+Local demo over plain HTTP with fixed demo passwords. See `docs/limitations_ethics.md`.
