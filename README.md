@@ -64,7 +64,7 @@ Demo credentials for evaluation only.
 ```bash
 pytest -q
 ```
-99 automated tests (about one to two minutes) cover all six functional requirements, the mandatory
+105 automated tests (about one to two minutes) cover all six functional requirements, the mandatory
 evaluation cases T1 to T4 and T-final, and authorization, injection, CSRF, rate-limit and recovery
 tests. Tests run on a temporary database and never touch real data. Results: `docs/test_results.md`.
 

@@ -21,7 +21,7 @@
 | 9:00 to 11:00 | Log in as admin. Admin page: change threshold from 5 to 31, confirm. Back as analyst rerun the small-groups query | "The admin changed one rule. The same query is now a fresh release and every group is hidden." |
 | | Admin page: filter the audit log by `config_change` | "Who, when, old and new value: traceable. The log never contains passwords or file contents." Then set the threshold back to 5. |
 | 11:00 to 12:00 | Accuracy page: `count`, Compare | "Error follows 1/epsilon: about 10 at epsilon 0.1 and 0.5 at epsilon 2. That is the privacy and accuracy trade-off." |
-| 12:00 to 13:00 | Show `screenshots/16_pytest_99_passed.png` and the report's evidence index | "99 tests, all passing: T1 to T4, authorization, CSRF, rate limits, injection, restart recovery. Average decision time 15.6 ms." |
+| 12:00 to 13:00 | Show `screenshots/16_pytest_all_passed.png` and the report's evidence index | "105 tests, all passing: T1 to T4, authorization, CSRF, rate limits, injection, restart recovery. Average decision time 15.6 ms." |
 | 13:00 to 14:00 | Limitations slide or file | "Local HTTP demo, fixed demo passwords, basic composition. Next steps: HTTPS, password change at first login, advanced accounting." |
 
 ## Backup plan

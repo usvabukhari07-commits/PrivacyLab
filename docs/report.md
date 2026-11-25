@@ -12,7 +12,7 @@ Laplace or Gaussian noise, tracks a per-dataset privacy budget (epsilon) that is
 server, protects against repeated-query averaging and small-group disclosure, and explains the
 privacy risk of every release. Three roles (admin, analyst, viewer) are enforced server-side, and
 every security-relevant action is written to an append-only audit log. The system is verified by
-99 automated tests, all passing, covering the six functional requirements, the mandatory cases
+105 automated tests, all passing, covering the six functional requirements, the mandatory cases
 T1 to T4 and T-final, and authorization, injection, CSRF, rate-limit and recovery behaviour.
 Average query decision latency is 15.6 ms.
 
@@ -151,8 +151,8 @@ The threat model lists 17 threats with mitigations and the test that demonstrate
 ### 7.1 Overall results
 | Measure | Result | Evidence |
 |---|---|---|
-| Automated tests | 99 total, 99 passed (100%), required 80% | `docs/test_results.md`, `docs/pytest_output.txt`, `screenshots/16_pytest_99_passed.png` |
-| Clean-install run from the repository | 99 passed | repeated from a fresh clone |
+| Automated tests | 105 total, 105 passed (100%), required 80% | `docs/test_results.md`, `docs/pytest_output.txt`, `screenshots/16_pytest_all_passed.png` |
+| Clean-install run from the repository | 105 passed | repeated from a fresh clone |
 | Unresolved critical defects (authorization, injection, secret exposure, unsafe file handling) | 0 | `docs/test_results.md` |
 | Average query decision latency | 15.6 ms (maximum 47.6 ms, 20 queries) | `test_decision_latency_is_reported` |
 
@@ -220,4 +220,4 @@ and per-person budgets.
 | Admin changes are traceable | `test_admin_*`, screenshots 11 and 12 |
 | Export is sanitized | `test_export_is_sanitized`, screenshot 13 |
 | Performance | 15.6 ms average, `test_decision_latency_is_reported` |
-| Reproducible from a clean install | README setup, repeated from a fresh clone: 99 passed |
+| Reproducible from a clean install | README setup, repeated from a fresh clone: 105 passed |
