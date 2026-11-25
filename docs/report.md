@@ -169,11 +169,11 @@ The threat model lists 17 threats with mitigations and the test that demonstrate
 Count query grouped by department (4 groups of 50), 500 trials per group:
 | Epsilon | Expected mean abs error (1/epsilon) | Measured mean abs error | RMSE | Mean relative error % |
 |---|---|---|---|---|
-| 0.1 | 10.0 | [copy from screenshot 08] | [ ] | [ ] |
-| 0.25 | 4.0 | [ ] | [ ] | [ ] |
-| 0.5 | 2.0 | [ ] | [ ] | [ ] |
-| 1.0 | 1.0 | [ ] | [ ] | [ ] |
-| 2.0 | 0.5 | [ ] | [ ] | [ ] |
+| 0.1 | 10.0 | 9.951 | 14.04 | 19.903 |
+| 0.25 | 4.0 | 3.915 | 5.603 | 7.83 |
+| 0.5 | 2.0 | 2.001 | 2.783 | 4.003 |
+| 1.0 | 1.0 | 0.987 | 1.384 | 1.975 |
+| 2.0 | 0.5 | 0.504 | 0.709 | 1.008 |
 
 The measurements follow the theory: halving epsilon doubles the error, and the privacy gained at
 small epsilon costs accuracy, which is the central trade-off of differential privacy.
